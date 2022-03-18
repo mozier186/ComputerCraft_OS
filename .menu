@@ -1,0 +1,96 @@
+os.pullEvent = os.pullEventRaw
+
+local osName = 'Smörgåstårta'
+local versionNumber = 'V1.2.2'
+local w,h = term.getSize()
+
+-- Text Centering
+
+function printCentered (y,s)
+  local x = math.floor((w - string.len(s)) /2)
+  term.setCursorPos(x,y)
+  term.clearLine()
+  term.write(s)
+end
+
+local nOption = 1
+
+-- Draw Menu Graphical
+
+local function drawMenu()
+  term.clear()
+  term.setCursorPos(1,21)
+  term.write(osName..' OS '..versionNumber)
+  
+  term.setCursorPos(w-11,1)
+  if nOption == 1 then
+    term.write('COMMAND')
+  elseif nOption == 2 then
+    term.write('PROGRAMS')
+  elseif nOption == 3 then
+    term.write('UNINSTALL')
+  elseif nOption == 4 then
+    term.write('SHUTDOWN')
+  elseif nOption == 5 then
+    term.write('REBOOT')
+  else
+    end
+end
+
+-- Graphical User Interface
+
+term.clear()
+local function drawFrontend()
+  printCentered(math.floor(h/2) - 3, '')
+  printCentered(math.floor(h/2) - 2, 'Start Menu')
+  printCentered(math.floor(h/2) - 1, '')
+  printCentered(math.floor(h/2) + 0, ((nOption == 1) and '[ COMMAND ]') or 'COMMAND')
+  printCentered(math.floor(h/2) + 1, ((nOption == 1) and '[ PROGRAMS ]') or 'PROGRAMS')
+  printCentered(math.floor(h/2) + 2, ((nOption == 1) and '[ UNINSTALL ]') or 'UNINSTALL')
+  printCentered(math.floor(h/2) + 3, ((nOption == 1) and '[ SHUTDOWN ]') or 'SHUTDOWN')
+  printCentered(math.floor(h/2) + 4, ((nOption == 1) and '[ REBOOT ]') or 'REBOOT')
+end
+
+-- Display
+
+drawMenu()
+drawFrontend()
+
+while true do
+  local e,p = os.pullEvent()
+    if e == "key" then
+	  local key = p
+	  if key == 17 or key == 200 then
+	  
+	    if nOption > 1 then
+		  nOption = nOption - 1
+		  drawMenu()
+		  drawFrontend()
+		end
+	  elseif key == 31 or key == 208 then
+	    if nOption < 4 then
+		  nOption = nOption + 1
+		  drawMenu()
+		  drawFrontend()
+		end
+	  end
+	elseif key == 28 then
+	  break
+	end
+end
+
+term.clear()
+
+-- Conditions
+
+if nOption == 1 then
+  shell.run('os/.command')
+elseif nOption == 2 then
+  shell.run('os/.programs')
+elseif nOption == 3 then
+  os.reboot()
+elseif nOption == 4 then
+  os.shutdown()
+else
+  shell.run('os/.uninstall')
+end
